@@ -2,6 +2,6 @@
     "permissions": {
         "admin":  ["read", "write", "delete"],
         "editor": ["read", "write"],
-        "viewer": []
+        "viewer": ["read"]
     }
 }

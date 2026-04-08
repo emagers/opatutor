@@ -1,42 +1,64 @@
-# Exercise 03 - Rules
+# Exercise 03 - Rules: Complete and Partial
 #
 # Overview:
-#   Rego has two types of rules: complete rules and partial rules.
+#   Rego has two categories of rules:
 #
-#   A *complete rule* defines a single value for a given name. If more than one
-#   complete rule with the same name is defined in the same package and their
-#   bodies can both be true at the same time with conflicting values, OPA raises
-#   an error.
+#   *Complete rules* assign a single value to a name. If two complete rules
+#   with the same name could both fire with different values, OPA raises a
+#   conflict error at query time. Use them for configuration constants and
+#   definitive allow/deny decisions.
+#     Syntax:  name := value             (unconditional)
+#              name := value if { body } (conditional)
 #
-#   A *partial rule* (also called an incremental rule) collects values into a
-#   set or key-value pairs into an object. Multiple partial rules with the same
-#   name simply contribute more values to the result.
-#
-#   Rule heads use `contains` to build sets and `[key] :=` to build objects.
+#   *Partial rules* accumulate values across many rule definitions.
+#   - Partial SET rules use `contains` — each matching body adds an element.
+#     Syntax:  name contains element if { body }
+#   - Partial OBJECT rules use `[key] :=` — each matching body adds a key.
+#     Syntax:  name[key] := value if { body }
+#   Multiple definitions of the same partial rule never conflict; they simply
+#   contribute more data to the result.
 #
 # Documentation:
 #   https://www.openpolicyagent.org/docs/latest/policy-language/#rules
 #
-# Task:
-#   Two things need to be fixed:
+# Input structure:
+#   {
+#     "regions":  [string, ...],     -- cloud region IDs, e.g. "us-east-1"
+#     "services": [                  -- service descriptors
+#       { "name": string, "replicas": number }
+#     ]
+#   }
 #
-#   1. The complete rule `max_retries` should return the number 3, but it
-#      currently returns the wrong value. Change it so it correctly returns 3.
+# Example inputs / expected results:
+#   { "regions": ["us-east-1", "eu-west-1", "us-west-2", "ap-south-1"] }
+#       → approved_regions = {"us-east-1", "us-west-2"}
+#   { "services": [{"name": "api", "replicas": 2}, {"name": "db", "replicas": 5}] }
+#       → replica_counts = {"api": 2, "db": 5}
 #
-#   2. The partial rule `approved_regions` should collect only regions that
-#      start with "us-". It currently keeps regions that start with "eu-".
-#      Fix the prefix so only US regions are approved.
+# Tasks:
+#   1. Write a complete rule `max_retries` that always returns the integer 3.
+#
+#   2. Write a partial set rule `approved_regions` that collects every region
+#      from `input.regions` that starts with the prefix "us-".
+#      Use the `startswith` built-in to test each region.
+#
+#   3. Write a partial object rule `replica_counts` that maps each service's
+#      `name` to its `replicas` count, iterating over `input.services`.
 
 package policy_language.rules
 
 import rego.v1
 
-# Complete rule — should always return 3
-max_retries := 5
+# TODO 1: write a complete rule — max_retries should always equal 3
+# max_retries := ...
 
-# Partial set rule — should collect regions starting with "us-"
-approved_regions contains r if {
-	r := input.regions[_]
-	# TODO: fix the prefix — we want "us-" regions, not "eu-"
-	startswith(r, "eu-")
-}
+# TODO 2: write a partial set rule — collect regions from input.regions
+#         where the region starts with "us-"
+# approved_regions contains r if {
+#     ...
+# }
+
+# TODO 3: write a partial object rule — map service name → replica count
+# replica_counts[name] := replicas if {
+#     ...
+# }

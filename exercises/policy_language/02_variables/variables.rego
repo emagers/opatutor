@@ -1,32 +1,58 @@
 # Exercise 02 - Variables
 #
 # Overview:
-#   In Rego, variables are assigned by unification, not imperative assignment.
-#   A variable is defined the first time it appears, and Rego will try to find
-#   a value that makes all statements in the rule body true simultaneously.
+#   In Rego, variables are assigned by *unification*, not imperative assignment.
+#   When a variable name appears for the first time in a rule body, Rego binds
+#   it to a value that satisfies every expression in the body simultaneously.
 #
-#   Variables in rule bodies are local to that rule. Rego does NOT have mutable
-#   state — once a variable is unified with a value, it cannot be reassigned.
+#   Variables are local to the rule they appear in — they cannot be shared
+#   across rules, and once bound within an evaluation they do not change.
 #
-#   Iteration happens implicitly: when you reference an element of a collection
-#   without specifying an index, Rego tries every element in turn.
+#   Implicit iteration: using `_` (or a named variable) as an array/set index
+#   makes Rego try every element automatically. A partial rule body that
+#   iterates like this fires once per matching element, and the results
+#   accumulate into the rule's output set.
 #
 # Documentation:
 #   https://www.openpolicyagent.org/docs/latest/policy-language/#variables
 #
-# Task:
-#   The partial rule `risky_ports` should produce the set of ports from
-#   `input.ports` that are less than 1024 (privileged ports).
-#   The rule body references an element of `input.ports` but the comparison
-#   is wrong — it currently keeps ports GREATER than 1024.
-#   Fix the comparison operator so only privileged ports (< 1024) are collected.
+# Input structure:
+#   {
+#     "ports":    [number, ...],   -- TCP port numbers to evaluate
+#     "requests": [                -- HTTP request objects
+#       { "method": string, "path": string, "user": string }
+#     ]
+#   }
+#
+# Example inputs / expected results:
+#   { "ports": [80, 443, 8080, 22, 3306] }
+#       → risky_ports = {80, 443, 22}          (ports < 1024)
+#   { "requests": [
+#       {"method": "DELETE", "path": "/api/users", "user": "alice"},
+#       {"method": "GET",    "path": "/health",    "user": "bob"}
+#     ] }
+#       → destructive_users = {"alice"}
+#
+# Tasks:
+#   1. Write the `risky_ports` partial set rule that collects every port from
+#      `input.ports` that is strictly less than 1024 (privileged ports).
+#      Bind each element to a variable, then add a comparison expression.
+#
+#   2. Write the `destructive_users` partial set rule that collects the `user`
+#      field from every request in `input.requests` whose `method` is "DELETE".
 
 package policy_language.variables
 
 import rego.v1
 
-risky_ports contains port if {
-	# TODO: fix the comparison — we want ports strictly less than 1024
-	port := input.ports[_]
-	port > 1024
-}
+# TODO 1: write a partial set rule — collect ports from input.ports
+#         where the port is strictly less than 1024
+# risky_ports contains port if {
+#     ...
+# }
+
+# TODO 2: write a partial set rule — collect the user field from each request
+#         in input.requests where request.method == "DELETE"
+# destructive_users contains user if {
+#     ...
+# }

@@ -1,0 +1,13 @@
+{
+    "roles": {
+        "admin":     { "permissions": ["read", "write", "delete", "manage_users"] },
+        "developer": { "permissions": ["read", "write"] },
+        "auditor":   { "permissions": ["read", "audit"] },
+        "viewer":    { "permissions": ["read"] }
+    },
+    "user_roles": {
+        "alice": ["admin"],
+        "bob":   ["developer", "auditor"],
+        "carol": ["viewer"]
+    }
+}

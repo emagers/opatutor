@@ -5,45 +5,68 @@
 #
 #   - `count(collection)` — number of elements.
 #   - `sum(array)` / `product(array)` — numeric aggregation.
-#   - `min(array)` / `max(array)` — extremes.
-#   - `sort(array)` — returns a new sorted array.
-#   - `array.concat(a, b)` — concatenates two arrays.
-#   - `array.slice(arr, start, stop)` — returns a slice (stop is exclusive).
+#   - `min(array)` / `max(array)` — smallest / largest value.
+#   - `sort(array)` — returns a new array sorted in ascending order.
+#   - `array.concat(a, b)` — concatenates two arrays into one.
+#   - `array.slice(arr, start, stop)` — sub-array from start (inclusive) to
+#     stop (exclusive); zero-based indices.
 #   - `any(array)` / `all(array)` — boolean aggregation over an array of bools.
 #
 # Documentation:
 #   https://www.openpolicyagent.org/docs/latest/policy-reference/#aggregates
 #   https://www.openpolicyagent.org/docs/latest/policy-reference/#arrays-2
 #
-# Task:
-#   Three rules need fixing:
+# Input structure:
+#   {
+#     "requests": [any, ...],  -- a list of arbitrary items to count
+#     "scores":   [number, ...],  -- unsorted numeric scores
+#     "items":    [any, ...],     -- a list to slice the top elements from
+#     "durations": [number, ...]  -- response times in milliseconds
+#   }
 #
-#   1. `request_count` should return the number of items in `input.requests`.
-#      The body uses `sum` — change it to the correct builtin.
+# Example inputs / expected results:
+#   { "requests": ["a", "b", "c", "d"] }
+#       → request_count = 4
+#   { "scores": [42, 7, 99, 3, 55] }
+#       → sorted_scores = [3, 7, 42, 55, 99]
+#   { "items": ["alpha", "beta", "gamma", "delta", "epsilon"] }
+#       → top_three = ["alpha", "beta", "gamma"]
+#   { "durations": [120, 45, 300, 80] }
+#       → max_duration = 300
 #
-#   2. `sorted_scores` should return `input.scores` in ascending order.
-#      The body returns the array as-is — wrap it with the correct builtin.
+# Tasks:
+#   1. Use `count` to write `request_count` — a complete rule returning the
+#      number of items in `input.requests`.
 #
-#   3. `top_three` should return the first 3 elements of `input.items`.
-#      The slice stop index is wrong — fix it (remember stop is exclusive and
-#      array.slice uses zero-based indices, so the first 3 elements end at
-#      index 3).
+#   2. Use `sort` to write `sorted_scores` — a complete rule returning
+#      `input.scores` sorted in ascending order.
+#
+#   3. Use `array.slice` to write `top_three` — a complete rule returning
+#      only the first 3 elements of `input.items`.
+#
+#   4. Use `max` to write `max_duration` — a complete rule returning the
+#      largest value in `input.durations`.
 
 package policy_language.builtins_arrays
 
 import rego.v1
 
-request_count := n if {
-	# TODO: fix the builtin — we want the count, not the sum
-	n := sum(input.requests)
-}
+# TODO 1: write a complete rule — return the count of items in input.requests
+# request_count := n if {
+#     ...
+# }
 
-sorted_scores := scores if {
-	# TODO: wrap input.scores with the correct sorting builtin
-	scores := input.scores
-}
+# TODO 2: write a complete rule — return input.scores sorted ascending
+# sorted_scores := scores if {
+#     ...
+# }
 
-top_three := items if {
-	# TODO: fix the stop index so we get elements 0, 1, and 2
-	items := array.slice(input.items, 0, 2)
-}
+# TODO 3: write a complete rule — return only the first 3 elements of input.items
+# top_three := items if {
+#     ...
+# }
+
+# TODO 4: write a complete rule — return the maximum value in input.durations
+# max_duration := m if {
+#     ...
+# }

@@ -1,4 +1,4 @@
-# Exercise 11 - OPA Bundles
+# Exercise - OPA Bundles
 #
 # Overview:
 #   An OPA *bundle* is a gzipped tar archive (.tar.gz) that packages one or
@@ -8,48 +8,51 @@
 #   Build a bundle:
 #     opa build -b <directory>            # produces bundle.tar.gz
 #     opa build -b <dir> -o my.tar.gz     # custom output name
-#     opa build -b <dir> --target wasm    # compile to WASM
 #
 #   Inspect a bundle:
 #     opa inspect bundle.tar.gz
 #
-#   Run OPA with a bundle:
-#     opa run bundle.tar.gz               # REPL with bundle loaded
-#     opa run --server bundle.tar.gz      # start OPA server
-#
-#   Bundles can be served over HTTP so OPA instances pull them automatically:
-#     services:
-#       bundleserver:
-#         url: https://bundles.example.com
-#     bundles:
-#       myapp:
-#         resource: /bundles/myapp.tar.gz
+#   After fixing this policy, try:
+#     opa build -b exercises/opa_tooling/02_bundling
+#     opa inspect bundle.tar.gz
 #
 # Documentation:
 #   https://www.openpolicyagent.org/docs/latest/management-bundles/
 #
 # Files in this exercise:
-#   network.rego        ← network access policy (fix this file)
+#   network.rego        ← this file (write the policy)
 #   data.json           ← allowed CIDRs and ports (do NOT edit)
 #   network_test.rego   ← tests (do NOT edit)
 #
-# Task:
-#   This exercise also introduces the `opa build` and `opa inspect` commands.
-#   After fixing the policy so the tests pass, try running:
+# data.json structure:
+#   {
+#     "allowed_cidrs": ["10.0.0.0/8", "192.168.0.0/16"],
+#     "allowed_ports": [80, 443, 8080]
+#   }
 #
-#     opa build -b exercises/opa_tooling/02_bundling
-#     opa inspect bundle.tar.gz
+# Input structure:
+#   {
+#     "destination": {
+#       "ip":   string,  -- e.g. "10.1.2.3"
+#       "port": number   -- e.g. 443
+#     }
+#   }
 #
-#   Two rules in network.rego need fixing:
+# Example inputs / expected results:
+#   { "destination": { "ip": "10.1.2.3",    "port": 443  } } → allow = true
+#   { "destination": { "ip": "8.8.8.8",     "port": 443  } } → allow = false (CIDR)
+#   { "destination": { "ip": "10.1.2.3",    "port": 22   } } → allow = false (port)
 #
-#   1. `allowed_connection` uses `net.cidr_contains` to check if the
-#      destination IP is within an allowed CIDR. The argument order is wrong —
-#      `net.cidr_contains(cidr, ip)` takes the CIDR first and the IP second.
-#      Fix the argument order.
+# Tasks:
+#   1. Write `allowed_connection` — true when the destination IP falls within
+#      any of the CIDRs listed in `data.allowed_cidrs`.
+#      Use `net.cidr_contains(cidr, ip)` — note the argument order: CIDR first.
 #
-#   2. `allowed_port` checks whether the destination port is in
-#      `data.allowed_ports`. The comparison uses `==` against the whole array
-#      instead of checking membership. Use `in` to test membership.
+#   2. Write `allowed_port` — true when `input.destination.port` is a member
+#      of `data.allowed_ports`.
+#      Use the `in` keyword for membership testing.
+#
+#   3. The `allow` rule is provided — do NOT change it.
 
 package opa_tooling.network
 
@@ -62,13 +65,14 @@ allow if {
 	allowed_port
 }
 
-allowed_connection if {
-	cidr := data.allowed_cidrs[_]
-	# TODO: fix argument order — net.cidr_contains(cidr, ip)
-	net.cidr_contains(input.destination.ip, cidr)
-}
+# TODO 1: write allowed_connection — true when the destination IP is within
+#         any CIDR in data.allowed_cidrs (use net.cidr_contains(cidr, ip))
+# allowed_connection if {
+#     ...
+# }
 
-allowed_port if {
-	# TODO: fix the check — use `in` to test port membership
-	input.destination.port == data.allowed_ports
-}
+# TODO 2: write allowed_port — true when input.destination.port is in
+#         data.allowed_ports (use the `in` keyword)
+# allowed_port if {
+#     ...
+# }

@@ -1,41 +1,43 @@
-# Exercise 10 - OPA Testing
+# Exercise - OPA Testing
 #
 # Overview:
-#   OPA has a built-in test runner that finds and executes any rule whose name
-#   starts with `test_`. You run it with:
+#   OPA has a built-in test runner. Any rule whose name starts with `test_`
+#   is executed as a test. Run them with:
 #
-#     opa test <path>              # run all tests under <path>
-#     opa test <path> -v           # verbose — shows each test name and result
-#     opa test <path> --coverage   # show which lines were exercised
+#     opa test <path>          # run all tests under <path>
+#     opa test <path> -v       # verbose — shows each test name and result
+#     opa test <path> --coverage
 #
-#   Test rules follow the same Rego syntax as any other rule. A test passes
-#   when its body evaluates to true, and fails when it evaluates to false or
-#   is undefined.
+#   A test PASSES when its body evaluates to true.
+#   A test FAILS when its body evaluates to false or is undefined.
 #
-#   You can use `not` to assert that a rule is NOT true:
-#     test_denied { not my_policy.allow with input as {...} }
+#   The `with` keyword overrides `input` or `data` inside a single expression,
+#   making each test self-contained:
+#     result := my_rule with input as { "key": "value" }
 #
-#   The `with` keyword overrides `input` or `data` within the scope of a
-#   single expression, making tests self-contained and repeatable.
+#   Use `not` to assert a rule is NOT true:
+#     not my_rule.allow with input as { ... }
 #
 # Documentation:
 #   https://www.openpolicyagent.org/docs/latest/policy-testing/
 #
 # Files in this exercise:
 #   inventory.rego       ← the policy being tested (do NOT edit)
-#   inventory_test.rego  ← this file — fix the broken test assertions
+#   inventory_test.rego  ← this file — write / fix the test assertions
 #   data.json            ← fixture data (do NOT edit)
 #
-# Task:
-#   Each of the three test stubs below has an incorrect assertion. Read what
-#   the test is supposed to verify (the comment above each one) and fix the
-#   assertion so the test correctly validates the described behaviour.
+# Policy rules in inventory.rego:
+#   vulnerable_packages   — set of installed package names that have a
+#                           high or critical CVE in data.vuln_db
+#   all_required_present  — true when every package in data.required_packages
+#                           is found in input.installed
+#   compliant             — true when no vulnerable packages AND all required
+#                           packages are present
 #
-#   The policy rules you are testing (defined in inventory.rego):
-#   - `vulnerable_packages` — set of installed package names with high/critical CVEs.
-#   - `all_required_present` — true when every package in data.required_packages
-#     appears in input.installed.
-#   - `compliant` — true when no vulnerable packages AND all required packages present.
+# Tasks:
+#   The reference test below is complete. Fix each of the three broken tests
+#   that follow it so that each assertion correctly validates the behaviour
+#   described in the comment above it.
 
 package opa_tooling.testing_test
 
@@ -43,7 +45,7 @@ import rego.v1
 
 import data.opa_tooling.inventory
 
-# --- already-complete reference test (do not edit) ---
+# --- reference test (do NOT edit) ---
 
 test_clean_package_not_flagged if {
 	result := inventory.vulnerable_packages with input as {
@@ -55,11 +57,11 @@ test_clean_package_not_flagged if {
 	not "curl" in result
 }
 
-# --- tests to fix ---
+# --- fix the tests below ---
 
-# "openssl" is in data.vuln_db with severity "critical".
-# This test should assert that "openssl" IS in the vulnerable_packages result.
-# TODO: the assertion below is wrong — fix it.
+# "openssl" appears in data.vuln_db with severity "critical".
+# This test should assert that "openssl" IS in vulnerable_packages.
+# TODO: the assertion is wrong — fix it so the test passes.
 test_critical_package_is_flagged if {
 	result := inventory.vulnerable_packages with input as {
 		"installed": [{"name": "openssl", "version": "3.0.0"}],
@@ -67,9 +69,9 @@ test_critical_package_is_flagged if {
 	not "openssl" in result
 }
 
-# When all packages in data.required_packages are installed, all_required_present
-# should be true.
-# TODO: the assertion below is wrong — remove the `not`.
+# When all packages in data.required_packages are installed,
+# all_required_present should be TRUE.
+# TODO: the assertion is wrong — remove the `not`.
 test_all_required_present_when_fully_installed if {
 	not inventory.all_required_present with input as {
 		"installed": [
@@ -82,7 +84,7 @@ test_all_required_present_when_fully_installed if {
 
 # When a high-severity package ("log4j") is installed alongside all required
 # packages, the system should NOT be compliant.
-# TODO: the assertion below is wrong — add `not` before inventory.compliant.
+# TODO: the assertion is wrong — add `not` before inventory.compliant.
 test_not_compliant_when_vulnerable_package_present if {
 	inventory.compliant with input as {
 		"installed": [
@@ -92,5 +94,20 @@ test_not_compliant_when_vulnerable_package_present if {
 			{"name": "log4j", "version": "2.14.0"},
 		],
 	}
+}
+
+# When only a subset of required packages is installed, all_required_present
+# should be FALSE.
+# TODO: this test body is empty — write the assertion.
+test_not_all_required_when_missing_package if {
+	# Hint: use `not inventory.all_required_present with input as { ... }`
+}
+
+# A fully clean system (all required present, no vulnerable packages)
+# should be compliant.
+# TODO: this test body is empty — write the assertion.
+test_compliant_when_clean if {
+	# Hint: provide installed packages that satisfy all_required_present
+	#       and none are in vuln_db. Check inventory.compliant is true.
 }
 

@@ -1,53 +1,69 @@
-# Exercise 09 - Docker Authorization
+# Exercise - Docker Authorization
 #
 # Overview:
-#   Docker supports authorization plugins that intercept every API request
-#   before it is executed. OPA can act as this plugin: Docker sends a JSON
-#   payload describing the request, and OPA's policy decides whether to allow
-#   or deny it.
+#   Docker supports authorization plugins that intercept every API request.
+#   OPA can act as this plugin: Docker sends a JSON payload and OPA's policy
+#   decides allow or deny.
 #
-#   A typical Docker authz payload looks like:
-#     {
-#       "AuthMethod": "",
-#       "User": "alice",
-#       "UserAuthNMethod": "TLS",
-#       "RequestMethod": "POST",
-#       "RequestUri": "/v1.41/containers/create",
-#       "RequestBody": { "Image": "nginx:latest", "HostConfig": { "Privileged": false } }
-#     }
-#
-#   Good practices enforced by policy:
-#   - Deny privileged containers (they can escape the host).
-#   - Deny containers that mount the Docker socket (full host access).
-#   - Restrict which image registries may be used.
+#   Key patterns in this exercise:
+#   - AND logic: multiple expressions in one rule body all must be true.
+#   - Deny-overrides: define explicit `deny_*` helper rules, then `allow` fires
+#     only when none of them are true.
+#   - `not` keyword: used to negate another rule.
 #
 # Documentation:
 #   https://www.openpolicyagent.org/docs/latest/docker-authorization/
 #
 # Files in this exercise:
-#   docker.rego       ← this file (fix the policy)
+#   docker.rego       ← this file (write the policy)
 #   data.json         ← approved registries list (do NOT edit)
 #   docker_test.rego  ← tests (do NOT edit)
 #
-# Task:
-#   Three rules need fixing:
+# data.json structure:
+#   { "approved_registries": ["docker.io", "gcr.io", "ghcr.io"] }
 #
-#   1. `deny_privileged` should deny requests that create a container with
-#      `HostConfig.Privileged` set to true. The field path is wrong —
-#      it currently reads `input.RequestBody.Privileged` instead of
-#      `input.RequestBody.HostConfig.Privileged`. Fix the path.
+# Input structure (Docker authz payload):
+#   {
+#     "RequestMethod": string,        -- HTTP verb, e.g. "POST", "GET"
+#     "RequestUri":    string,        -- e.g. "/v1.41/containers/create"
+#     "RequestBody": {
+#       "Image": string,              -- e.g. "docker.io/nginx:latest"
+#       "HostConfig": {
+#         "Privileged": boolean,
+#         "Binds": [string, ...]      -- bind-mount specs, e.g. ["/host/path:/ctr/path"]
+#       }
+#     }
+#   }
 #
-#   2. `deny_socket_mount` should deny containers that bind-mount the Docker
-#      socket (/var/run/docker.sock). The comprehension iterates over
-#      `input.RequestBody.Binds` but uses the wrong separator when checking
-#      the source path — Docker bind-mounts use ":" as the separator, so
-#      `parts[0]` is the host path. The check currently uses `parts[1]`.
-#      Fix the index.
+# Example inputs / expected results:
+#   POST /containers/create, Image=docker.io/nginx, Privileged=false, Binds=[]
+#       → allow = true
+#   POST /containers/create, Image=docker.io/nginx, Privileged=true
+#       → allow = false  (privileged denied)
+#   POST /containers/create, Binds=["/var/run/docker.sock:/var/run/docker.sock"]
+#       → allow = false  (socket mount denied)
+#   POST /containers/create, Image=evil.registry/img
+#       → allow = false  (unapproved registry)
+#   GET /containers/json
+#       → allow = true   (non-create requests always allowed)
 #
-#   3. `allow` should permit the request only when no deny rule fires AND
-#      the image is from an approved registry. The registry check is inverted —
-#      it currently denies approved registries. Fix the condition so it ALLOWS
-#      requests from approved registries.
+# Tasks:
+#   1. Write `deny_privileged` — true when the request creates a container
+#      (POST to a URI containing "/containers/create") with
+#      `input.RequestBody.HostConfig.Privileged` set to true.
+#
+#   2. Write `deny_socket_mount` — true when the request creates a container
+#      and one of the bind mounts in `input.RequestBody.HostConfig.Binds`
+#      has the Docker socket ("/var/run/docker.sock") as the HOST path.
+#      Hint: split each bind string on ":" — parts[0] is the host path.
+#
+#   3. Write `allow` for container-create requests: true when NEITHER
+#      `deny_privileged` NOR `deny_socket_mount` fires, AND the image's
+#      registry prefix is in `data.approved_registries`.
+#      Hint: split the image string on "/" — parts[0] is the registry.
+#
+#   4. Write a second `allow` rule that permits ALL non-create requests
+#      (i.e. when the RequestUri does NOT contain "/containers/create").
 
 package usecases.docker
 
@@ -55,35 +71,22 @@ import rego.v1
 
 default allow := false
 
-# Deny privileged containers.
-deny_privileged if {
-	input.RequestMethod == "POST"
-	contains(input.RequestUri, "/containers/create")
-	# TODO: fix the path — should be input.RequestBody.HostConfig.Privileged
-	input.RequestBody.Privileged == true
-}
+# TODO 1: write deny_privileged
+# deny_privileged if {
+#     ...
+# }
 
-# Deny containers that mount the Docker socket.
-deny_socket_mount if {
-	input.RequestMethod == "POST"
-	contains(input.RequestUri, "/containers/create")
-	bind := input.RequestBody.HostConfig.Binds[_]
-	parts := split(bind, ":")
-	# TODO: fix the index — host path is parts[0], not parts[1]
-	parts[1] == "/var/run/docker.sock"
-}
+# TODO 2: write deny_socket_mount
+# deny_socket_mount if {
+#     ...
+# }
 
-# Allow only when no deny rule fires and the image registry is approved.
-allow if {
-	not deny_privileged
-	not deny_socket_mount
-	image := input.RequestBody.Image
-	registry := split(image, "/")[0]
-	# TODO: fix this condition — it should ALLOW approved registries, not deny them
-	not registry in data.approved_registries
-}
+# TODO 3: write allow for container-create requests
+# allow if {
+#     ...
+# }
 
-# Non-create requests (inspect, list, logs, etc.) are always allowed.
-allow if {
-	not contains(input.RequestUri, "/containers/create")
-}
+# TODO 4: write allow for non-create requests
+# allow if {
+#     ...
+# }

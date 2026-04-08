@@ -21,32 +21,48 @@
 #   https://www.openpolicyagent.org/docs/latest/philosophy/#the-opa-document-model
 #
 # Files in this exercise:
-#   data_and_input.rego  ← this file  (fix the policy)
-#   data.json            ← base data  (fix the permissions table)
+#   data_and_input.rego       ← this file (write the policy)
+#   data.json                 ← permissions table, already complete (do NOT edit)
 #   data_and_input_test.rego  ← tests (do NOT edit)
 #
-# Task:
-#   Two things need to be fixed:
+# data.json structure:
+#   {
+#     "permissions": {
+#       "admin":  ["read", "write", "delete"],
+#       "editor": ["read", "write"],
+#       "viewer": ["read"]
+#     }
+#   }
 #
-#   1. In THIS FILE — the rule body reads the role from the wrong path.
-#      The tests send input shaped like:
-#        { "user": { "role": "viewer" }, "action": "read" }
-#      Change the role lookup so it reads from `input.user.role` instead of
-#      the current (incorrect) path.
+# Input structure:
+#   {
+#     "user":   { "role": string },  -- e.g. "admin", "editor", "viewer"
+#     "action": string               -- e.g. "read", "write", "delete"
+#   }
 #
-#   2. In data.json — the `viewer` role has an empty permissions list,
-#      so viewers can never do anything. Add `"read"` to the viewer
-#      permissions so the tests that expect viewers to read can pass.
+# Example inputs / expected results:
+#   { "user": { "role": "admin" }, "action": "delete" }  → allow = true
+#   { "user": { "role": "viewer" }, "action": "write" }  → allow = false
+#   { "user": { "role": "viewer" }, "action": "read" }   → allow = true
+#   {}                                                   → allow = false
+#
+# Tasks:
+#   1. Use the `default` keyword so `allow` falls back to false.
+#
+#   2. Write an `allow` rule that looks up the requesting user's role from
+#      `input.user.role`, then checks whether `input.action` is contained in
+#      the list `data.permissions[role]`.
+#      Use the `in` keyword for the membership check.
 
 package policy_language.data_and_input
 
 import rego.v1
 
-default allow := false
+# TODO 1: declare allow with a default of false
+# default allow := ...
 
-allow if {
-	# TODO: fix this — role should come from input.user.role
-	role := input.role
-	action := input.action
-	action in data.permissions[role]
-}
+# TODO 2: write allow — look up input.user.role in data.permissions,
+#         then check that input.action is in the allowed list
+# allow if {
+#     ...
+# }

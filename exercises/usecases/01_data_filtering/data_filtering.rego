@@ -1,57 +1,69 @@
-# Exercise 08 - Data Filtering
+# Exercise - Data Filtering
 #
 # Overview:
-#   A common OPA use-case is *partial evaluation* / data filtering: instead of
-#   making a single allow/deny decision, the policy produces a set of conditions
-#   (or a filtered view of a dataset) that a downstream system (e.g., a database
-#   or API layer) can use to retrieve only the data the caller is allowed to see.
+#   A common OPA use-case is producing a *filtered view* of a dataset rather
+#   than a single allow/deny decision. The policy iterates a collection and
+#   keeps only the elements the caller is permitted to see. A downstream system
+#   (a database query layer, API handler, etc.) can use the result to return
+#   only authorised data.
 #
-#   The simplest form is a comprehension that iterates over a collection in
-#   `data` or `input` and keeps only the elements that satisfy a policy check.
-#
-#   This exercise models a document store where each document has an `owner`
-#   and a `classification` level. The policy determines which documents a
-#   requesting user may read.
+#   OR logic with partial rules: defining two rules with the same name is how
+#   Rego expresses OR. A document belongs to `readable_docs` if rule-body-A is
+#   true OR rule-body-B is true — no `||` operator needed.
 #
 # Documentation:
 #   https://www.openpolicyagent.org/docs/latest/filtering-data/
 #
 # Files in this exercise:
-#   data_filtering.rego       ← this file  (fix the policy)
-#   data.json                 ← document catalogue  (do NOT edit)
-#   data_filtering_test.rego  ← tests  (do NOT edit)
+#   data_filtering.rego       ← this file (write the policy)
+#   data.json                 ← document catalogue (do NOT edit)
+#   data_filtering_test.rego  ← tests (do NOT edit)
 #
-# Task:
-#   Two rules need fixing:
+# data.json structure:
+#   {
+#     "documents": [
+#       { "id": string, "owner": string, "classification": "public"|"private" }
+#     ]
+#   }
 #
-#   1. `readable_docs` should return the IDs of documents the requesting user
-#      may read. A user may read a document when EITHER:
-#        a) they are the document owner, OR
-#        b) the document classification is "public".
-#      The two partial rules below implement (a) and (b), but the ownership
-#      check uses the wrong field — it compares `doc.author` instead of
-#      `doc.owner`. Fix it.
+# Input structure:
+#   { "user": string }   -- the username of the requesting user
 #
-#   2. `summary` should return a count of how many documents the user can read.
-#      It currently returns the count of ALL documents regardless of the user.
-#      Fix it so it counts only the entries in `readable_docs`.
+# Example inputs / expected results:
+#   { "user": "alice" }
+#       → readable_docs = {"doc-1", "doc-2", "doc-4"}
+#         (doc-1: owned by alice; doc-2, doc-4: public)
+#       → summary = 3
+#   { "user": "nobody" }
+#       → readable_docs = {"doc-2", "doc-4"}  (only public docs)
+#       → summary = 2
+#
+# Tasks:
+#   1. Write the first `readable_docs` partial set rule that adds a document's
+#      `id` when the requesting user (`input.user`) is the document's `owner`.
+#      Iterate over `data.documents` and compare `doc.owner`.
+#
+#   2. Write a second `readable_docs` partial set rule that adds a document's
+#      `id` when its `classification` equals "public".
+#      (Having two rules with the same name implements OR logic.)
+#
+#   3. Write the `summary` complete rule that returns the count of documents
+#      in `readable_docs` (not the total number of all documents).
 
 package usecases.data_filtering
 
 import rego.v1
 
-# Collect IDs of documents owned by the requesting user.
-readable_docs contains doc.id if {
-	doc := data.documents[_]
-	# TODO: fix the field name — ownership is stored in doc.owner, not doc.author
-	doc.author == input.user
-}
+# TODO 1: collect IDs of documents owned by the requesting user (input.user)
+# readable_docs contains doc.id if {
+#     ...
+# }
 
-# Collect IDs of public documents (anyone may read these).
-readable_docs contains doc.id if {
-	doc := data.documents[_]
-	doc.classification == "public"
-}
+# TODO 2: collect IDs of documents whose classification is "public"
+#         (same rule name → OR logic with TODO 1)
+# readable_docs contains doc.id if {
+#     ...
+# }
 
-# Return a count of readable documents for the requesting user.
-summary := count(data.documents)
+# TODO 3: return the count of readable_docs for the requesting user
+# summary := ...

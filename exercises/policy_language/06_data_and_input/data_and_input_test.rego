@@ -13,22 +13,34 @@ test_admin_can_delete if {
 	data_and_input.allow with input as {"user": {"role": "admin"}, "action": "delete"}
 }
 
+test_admin_can_read if {
+	data_and_input.allow with input as {"user": {"role": "admin"}, "action": "read"}
+}
+
 # Editors can read and write, but not delete.
 test_editor_can_read if {
 	data_and_input.allow with input as {"user": {"role": "editor"}, "action": "read"}
+}
+
+test_editor_can_write if {
+	data_and_input.allow with input as {"user": {"role": "editor"}, "action": "write"}
 }
 
 test_editor_cannot_delete if {
 	not data_and_input.allow with input as {"user": {"role": "editor"}, "action": "delete"}
 }
 
-# Viewers can only read (requires fixing data.json).
+# Viewers can only read.
 test_viewer_can_read if {
 	data_and_input.allow with input as {"user": {"role": "viewer"}, "action": "read"}
 }
 
 test_viewer_cannot_write if {
 	not data_and_input.allow with input as {"user": {"role": "viewer"}, "action": "write"}
+}
+
+test_viewer_cannot_delete if {
+	not data_and_input.allow with input as {"user": {"role": "viewer"}, "action": "delete"}
 }
 
 # Roles not present in data.permissions are always denied.
@@ -39,4 +51,8 @@ test_unknown_role_denied if {
 # When input carries no user at all, the default kicks in.
 test_missing_user_denied if {
 	not data_and_input.allow with input as {"action": "read"}
+}
+
+test_empty_input_denied if {
+	not data_and_input.allow with input as {}
 }
