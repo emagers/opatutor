@@ -67,3 +67,11 @@ import rego.v1
 
 # TODO 3: return the count of readable_docs for the requesting user
 # summary := ...
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+readable_docs contains id if {
+	id := data.documents[_].id
+	false
+}
+
+summary := 0 if { false }

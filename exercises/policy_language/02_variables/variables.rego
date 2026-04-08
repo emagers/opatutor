@@ -56,3 +56,14 @@ import rego.v1
 # destructive_users contains user if {
 #     ...
 # }
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+risky_ports contains port if {
+	port := input.ports[_]
+	false
+}
+
+destructive_users contains user if {
+	user := input.requests[_].user
+	false
+}

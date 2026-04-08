@@ -79,3 +79,13 @@ import rego.v1
 #     some port in server.ports
 #     ...
 # }
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+all_tls_enabled if { false }
+
+servers_with_prod_tag contains id if {
+	id := input.servers[_].id
+	false
+}
+
+has_privileged_port if { false }

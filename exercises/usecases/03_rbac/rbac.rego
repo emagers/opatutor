@@ -71,3 +71,11 @@ import rego.v1
 # TODO 2: allow when the requested action is in user_permissions
 # default allow := false
 # allow if { ... }
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+user_permissions contains perm if {
+	perm := data.roles[_].permissions[_]
+	false
+}
+
+default allow := false

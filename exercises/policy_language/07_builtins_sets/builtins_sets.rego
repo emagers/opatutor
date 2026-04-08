@@ -74,3 +74,13 @@ required_scopes := {"read", "write", "admin"}
 # privileged_and_active contains user.name if {
 #     ...
 # }
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+missing_scopes := set() if { false }
+
+common_tags := set() if { false }
+
+privileged_and_active contains name if {
+	name := input.users[_].name
+	false
+}

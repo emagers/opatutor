@@ -64,3 +64,8 @@ import rego.v1
 # mfa_required if {
 #     ...
 # }
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+default allow := false
+
+mfa_required if { false }

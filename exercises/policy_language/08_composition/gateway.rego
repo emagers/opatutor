@@ -69,3 +69,6 @@ import rego.v1
 # allow if {
 #     ...
 # }
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+default allow := false

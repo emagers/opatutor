@@ -90,3 +90,8 @@ default allow := false
 # allow if {
 #     ...
 # }
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+deny_privileged if { false }
+
+deny_socket_mount if { false }

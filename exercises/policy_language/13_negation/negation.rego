@@ -31,7 +31,7 @@
 #     "action":   string    -- the requested action
 #   }
 #
-# data structure (provided inline via `with data as` in tests):
+# data structure (loaded from data.json in this directory):
 #   {
 #     "blocklist":          [string, ...],  -- blocked IP addresses
 #     "sanctioned_countries": [string, ...]  -- blocked country codes
@@ -83,3 +83,12 @@ import rego.v1
 # risk_decision := "deny"   if { ... }
 # else          := "review" if { ... }
 # else          := "allow"
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+is_blocked_ip if { false }
+
+is_sanctioned_country if { false }
+
+default allow := false
+
+risk_decision := "" if { false }

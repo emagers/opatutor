@@ -76,3 +76,8 @@ allow if {
 # allowed_port if {
 #     ...
 # }
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+allowed_connection if { false }
+
+allowed_port if { false }

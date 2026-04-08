@@ -70,3 +70,12 @@ import rego.v1
 # max_duration := m if {
 #     ...
 # }
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+request_count := 0 if { false }
+
+sorted_scores := [] if { false }
+
+top_three := [] if { false }
+
+max_duration := 0 if { false }

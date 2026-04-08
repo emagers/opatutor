@@ -73,3 +73,15 @@ import rego.v1
 # clean_hostname := h if {
 #     ...
 # }
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+http_methods contains method if {
+	method := input.methods[_]
+	false
+}
+
+service_label := "" if { false }
+
+normalized_name := "" if { false }
+
+clean_hostname := "" if { false }

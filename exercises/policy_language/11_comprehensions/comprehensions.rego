@@ -63,3 +63,10 @@ import rego.v1
 
 # TODO 3: object comprehension — map id → score for active users
 # score_by_id := {... | ...}
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+active_scores := [] if { false }
+
+active_names := set() if { false }
+
+score_by_id := {} if { false }

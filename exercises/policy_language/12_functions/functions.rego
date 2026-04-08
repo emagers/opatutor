@@ -73,3 +73,12 @@ import rego.v1
 
 # TODO 4: write safe_paths using a set comprehension and is_safe_request
 # safe_paths := {... | ...}
+
+# --- stubs (tests will fail until you complete the TODOs above) ---
+classify(_score) := "" if { false }
+
+score_labels := [] if { false }
+
+is_safe_request(_req) if { false }
+
+safe_paths := set() if { false }
