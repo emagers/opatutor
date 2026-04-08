@@ -4,18 +4,38 @@ import rego.v1
 
 import data.policy_language.keywords
 
+# --- allow ---
+
 test_admin_is_allowed if {
-	keywords.allow with input as {"role": "admin"}
+	keywords.allow with input as {"user": {"role": "admin", "mfa_enabled": true}}
 }
 
-test_user_is_denied if {
-	not keywords.allow with input as {"role": "user"}
+test_editor_is_denied if {
+	not keywords.allow with input as {"user": {"role": "editor", "mfa_enabled": true}}
 }
 
-test_guest_is_denied if {
-	not keywords.allow with input as {"role": "guest"}
+test_viewer_is_denied if {
+	not keywords.allow with input as {"user": {"role": "viewer", "mfa_enabled": false}}
 }
 
-test_default_is_false if {
+test_empty_input_uses_default if {
 	not keywords.allow with input as {}
+}
+
+test_unknown_role_is_denied if {
+	not keywords.allow with input as {"user": {"role": "superadmin", "mfa_enabled": true}}
+}
+
+# --- mfa_required ---
+
+test_mfa_required_when_disabled if {
+	keywords.mfa_required with input as {"user": {"role": "viewer", "mfa_enabled": false}}
+}
+
+test_mfa_not_required_when_enabled if {
+	not keywords.mfa_required with input as {"user": {"role": "admin", "mfa_enabled": true}}
+}
+
+test_mfa_required_for_admin_without_mfa if {
+	keywords.mfa_required with input as {"user": {"role": "admin", "mfa_enabled": false}}
 }
