@@ -34,8 +34,24 @@ curl -L -o /usr/local/bin/opa \
 chmod +x /usr/local/bin/opa
 ```
 
-**Windows**
-Download the latest release from the [OPA releases page](https://github.com/open-policy-agent/opa/releases) and add it to your `PATH`.
+**Windows (PowerShell)**
+```powershell
+# Download the OPA binary
+Invoke-WebRequest -Uri "https://github.com/open-policy-agent/opa/releases/download/v0.68.0/opa_windows_amd64.exe" `
+  -OutFile "$env:USERPROFILE\opa.exe"
+
+# Move it somewhere on your PATH, e.g. C:\Program Files\opa\
+New-Item -ItemType Directory -Force -Path "C:\Program Files\opa"
+Move-Item "$env:USERPROFILE\opa.exe" "C:\Program Files\opa\opa.exe"
+
+# Add to PATH for the current session (or set it permanently in System Settings)
+$env:PATH += ";C:\Program Files\opa"
+```
+
+**Windows (winget)**
+```powershell
+winget install OpenPolicyAgent.OPA
+```
 
 Verify:
 ```bash
@@ -64,13 +80,31 @@ cd opatutor
 
 ### Build the `opatutor` CLI
 
+**macOS / Linux**
 ```bash
 go build -o opatutor ./cmd/opatutor
+```
+
+**Windows (PowerShell)**
+```powershell
+go build -o opatutor.exe .\cmd\opatutor
 ```
 
 > **Tip (macOS / Linux):** move the binary somewhere on your `PATH`:
 > ```bash
 > mv opatutor /usr/local/bin/
+> ```
+
+> **Tip (Windows):** move the binary somewhere on your `PATH`, or run it from the
+> current directory using `.\opatutor.exe`:
+> ```powershell
+> # Option A — run from the repo root (no PATH change needed)
+> .\opatutor.exe list
+>
+> # Option B — copy to a folder already on your PATH, e.g. C:\Program Files\opatutor\
+> New-Item -ItemType Directory -Force -Path "C:\Program Files\opatutor"
+> Copy-Item opatutor.exe "C:\Program Files\opatutor\"
+> # Then add C:\Program Files\opatutor to your PATH in System Settings
 > ```
 
 ### Start learning
@@ -88,6 +122,15 @@ opatutor run policy_language/01_keywords
 # Re-run every exercise and refresh progress
 opatutor verify
 ```
+
+> **Windows note:** substitute `opatutor` with `opatutor.exe` (or `.\opatutor.exe`
+> if you haven't added it to your `PATH`):
+> ```powershell
+> .\opatutor.exe list
+> .\opatutor.exe next
+> .\opatutor.exe run policy_language/01_keywords
+> .\opatutor.exe verify
+> ```
 
 ---
 
@@ -113,26 +156,32 @@ Progress is stored in `~/.config/opatutor/progress.json`.
 |---|---|---|
 | 01 | `policy_language/01_keywords` | `default`, `not`, `if` |
 | 02 | `policy_language/02_variables` | Variables and implicit iteration |
-| 03 | `policy_language/03_rules` | Complete rules vs. partial set rules |
+| 03 | `policy_language/03_rules` | Complete rules vs. partial rules |
 | 04 | `policy_language/04_builtins_strings` | String built-ins |
 | 05 | `policy_language/05_builtins_arrays` | Array built-ins |
 | 06 | `policy_language/06_data_and_input` | `data` vs `input` document model |
-| 07 | `policy_language/07_builtins_sets` | Set operations and comprehensions |
+| 07 | `policy_language/07_builtins_sets` | Set operations |
 | 08 | `policy_language/08_composition` | Importing one policy into another |
+| 09 | `policy_language/09_and_or_logic` | AND / OR logic patterns |
+| 10 | `policy_language/10_every_some` | `every` and `some` keywords |
+| 11 | `policy_language/11_comprehensions` | Array, set, and object comprehensions |
+| 12 | `policy_language/12_functions` | User-defined functions |
+| 13 | `policy_language/13_negation` | Negation-as-failure and `else` |
 
 ### Use Cases
 
 | # | Exercise | Topic |
 |---|---|---|
-| 09 | `usecases/01_data_filtering` | Partial evaluation / filtered datasets |
-| 10 | `usecases/02_docker` | Docker authorization plugin |
+| 14 | `usecases/01_data_filtering` | Partial evaluation / filtered datasets |
+| 15 | `usecases/02_docker` | Docker authorization plugin |
+| 16 | `usecases/03_rbac` | Role-Based Access Control (RBAC) |
 
 ### OPA Tooling
 
 | # | Exercise | Topic |
 |---|---|---|
-| 11 | `opa_tooling/01_testing` | Writing and fixing OPA tests |
-| 12 | `opa_tooling/02_bundling` | `opa build` / `opa inspect` bundles |
+| 17 | `opa_tooling/01_testing` | Writing and fixing OPA tests |
+| 18 | `opa_tooling/02_bundling` | `opa build` / `opa inspect` bundles |
 
 ---
 
