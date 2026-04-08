@@ -100,6 +100,7 @@ test_not_compliant_when_vulnerable_package_present if {
 # should be FALSE.
 # TODO: this test body is empty — write the assertion.
 test_not_all_required_when_missing_package if {
+	false # TODO: replace with your assertion
 	# Hint: use `not inventory.all_required_present with input as { ... }`
 }
 
@@ -107,6 +108,7 @@ test_not_all_required_when_missing_package if {
 # should be compliant.
 # TODO: this test body is empty — write the assertion.
 test_compliant_when_clean if {
+	false # TODO: replace with your assertion
 	# Hint: provide installed packages that satisfy all_required_present
 	#       and none are in vuln_db. Check inventory.compliant is true.
 }
