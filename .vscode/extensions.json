@@ -1,0 +1,6 @@
+{
+    "recommendations": [
+        "open-policy-agent.opa",
+        "golang.go"
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "[rego]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "open-policy-agent.opa"
+    },
+    "opa.dependency_analysis": true,
+    "opa.roots": [
+        "${workspaceFolder}/exercises"
+    ]
+}
