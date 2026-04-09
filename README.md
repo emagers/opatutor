@@ -107,30 +107,120 @@ go build -o opatutor.exe .\cmd\opatutor
 > # Then add C:\Program Files\opatutor to your PATH in System Settings
 > ```
 
-### Start learning
+> **Windows note:** The examples below use `opatutor`. On Windows substitute
+> `opatutor.exe` (or `.\opatutor.exe` if it isn't on your `PATH`).
+
+### How It Works
+
+Every exercise is a directory containing:
+
+```
+exercises/<section>/<nn>_<name>/
+├── <name>.rego          ← the policy file YOU edit (has TODO comments)
+├── <name>_test.rego     ← tests that verify your work (do NOT edit)
+└── data.json            ← static data used by the policy (optional, do NOT edit)
+```
+
+Your goal for each exercise: **read the TODO comments in the `.rego` policy file, write the missing rules, and make all the tests pass.**
+
+### Step-by-Step Workflow
+
+#### 1. See what's ahead
 
 ```bash
-# See all exercises and your current progress
 opatutor list
+```
 
-# Jump straight to the first incomplete exercise
+This shows every exercise with a ✓ (complete) or ○ (incomplete) marker. Exercises are ordered by topic — start at the top.
+
+#### 2. Start the next exercise
+
+```bash
 opatutor next
+```
 
-# Run tests for a specific exercise
+This finds the first incomplete exercise, runs its tests, and shows you which ones pass and fail. On a fresh start everything will fail — that's expected.
+
+#### 3. Open the policy file and read the comments
+
+Open the `.rego` file for the exercise (not the `_test.rego` file). At the top you'll find:
+
+- An **overview** of the concept being taught
+- A link to the relevant **OPA documentation**
+- The **input structure** the tests will provide
+- **Example inputs and expected results**
+- Numbered **tasks** describing exactly what you need to write
+
+Below the tasks you'll see commented-out scaffolding that hints at the shape of each solution:
+
+```rego
+# TODO 1: declare allow with a default of false
+# default allow := ...
+
+# TODO 2: write allow — look up the user's role in data.permissions
+# allow if {
+#     ...
+# }
+```
+
+The scaffold matches the form of the expected solution — if it shows `name := ...` you're writing a simple assignment; if it shows `name if { ... }` you're writing a conditional rule.
+
+#### 4. Write your solution
+
+Uncomment or rewrite the scaffolded block, replacing `...` with real Rego code. Don't touch the **stubs** section at the bottom of the file — those exist to prevent compilation errors while you work and will be shadowed by your rules once you write them.
+
+#### 5. Test your work
+
+```bash
 opatutor run policy_language/01_keywords
+```
 
-# Re-run every exercise and refresh progress
+Or just run `opatutor next` again — it re-runs the same exercise until all tests pass.
+
+You'll see per-test results:
+
+```
+  ✓  admin_is_allowed
+  ✗  viewer_is_denied
+  ✓  mfa_required_when_no_mfa
+
+  2 passed · 1 failed  (3 total)
+
+○ Some tests are still failing.
+  Open exercises/policy_language/01_keywords and follow the TODO comments.
+```
+
+Fix the remaining issues, save the file, and re-run. Iterate until you see:
+
+```
+✓ All tests passed! Exercise complete.
+```
+
+#### 6. Move on
+
+```bash
+opatutor next
+```
+
+This skips completed exercises and jumps to the next one.
+
+#### 7. Check overall progress at any time
+
+```bash
 opatutor verify
 ```
 
-> **Windows note:** substitute `opatutor` with `opatutor.exe` (or `.\opatutor.exe`
-> if you haven't added it to your `PATH`):
-> ```powershell
-> .\opatutor.exe list
-> .\opatutor.exe next
-> .\opatutor.exe run policy_language/01_keywords
-> .\opatutor.exe verify
-> ```
+This runs every exercise and refreshes your progress file.
+
+### Tips
+
+- **Read the tests.** The `_test.rego` file shows exactly what inputs will be provided and what outputs are expected. You don't edit it, but it's a great reference.
+- **Use the OPA docs.** Each exercise header links to the relevant documentation page.
+- **Format on save.** If you're using VSCode with the OPA extension, your files are auto-formatted whenever you save.
+- **Reset an exercise.** If your progress gets out of sync, clear one exercise and try again:
+  ```bash
+  opatutor reset policy_language/01_keywords
+  ```
 
 ---
 
@@ -140,8 +230,9 @@ opatutor verify
 |---|---|
 | `opatutor list` | List all exercises with ✓ / ○ status |
 | `opatutor next` | Find and run the next incomplete exercise |
-| `opatutor run <slug>` | Run tests for one exercise by its slug |
-| `opatutor verify` | Run all exercises and update progress |
+| `opatutor run <slug>` | Run tests for one exercise by its slug (e.g. `policy_language/01_keywords`) |
+| `opatutor run-all` | Run every exercise in order with detailed per-test results |
+| `opatutor verify` | Run all exercises quietly and update progress |
 | `opatutor reset <slug>` | Clear the completion status of one exercise |
 
 Progress is stored in `~/.config/opatutor/progress.json`.
@@ -196,7 +287,9 @@ Progress is stored in `~/.config/opatutor/progress.json`.
    code .
    ```
 
-3. Use the pre-configured **launch configurations** (`.vscode/launch.json`):
+3. **Edit → Save → Test** — the included settings enable format-on-save for `.rego` files via the OPA extension, so your code is always cleanly formatted.
+
+4. Use the pre-configured **launch configurations** (press `F5` or open **Run and Debug**):
 
    | Configuration | What it does |
    |---|---|
@@ -205,9 +298,7 @@ Progress is stored in `~/.config/opatutor/progress.json`.
    | **OPA: Next exercise** | Runs `opatutor next` |
    | **OPA: Verify all exercises** | Runs `opatutor verify` |
 
-   Press `F5` (or open the **Run and Debug** panel) to choose a configuration and launch it in the integrated terminal.
-
-4. The `.vscode/settings.json` enables format-on-save for `.rego` files using the OPA extension.
+5. A `.regal/config.yaml` is included to suppress linter warnings that are intentional in a learning context (TODO comments, stub rules, etc.). If you use Regal for linting, it will pick this up automatically.
 
 ---
 
@@ -229,12 +320,14 @@ Exercises follow a simple three-file convention:
 exercises/<section>/<nn>_<name>/
 ├── <name>.rego          # intentionally broken policy — student edits this
 ├── <name>_test.rego     # tests — never edited by the student
-└── data.json            # base data (optional) — may also need fixing
+└── data.json            # base data (optional) — never edited by the student
 ```
 
 Rules:
 - The broken starting state must make at least one test fail.
-- The test file must never need to be edited.
+- The test file must never need to be edited (except in `opa_tooling/01_testing`, which teaches testing).
 - Each `TODO` comment must clearly explain *what* to change, not *what the answer is*.
+- TODO scaffolding must match the syntactic form of the expected solution — use `name := ...` for direct assignments, `name if { ... }` for conditional rules.
 - Policy content must be original — do not reproduce examples from the OPA documentation.
+- **Data portability:** If an exercise uses `data.json`, tests **must** inject mock data with `with data.<key> as mock_<key>` on every assertion. This ensures tests work both via the CLI (`opa test <dir>`) and VSCode's OPA test runner (which uses a different data root). Define mock data constants at the top of the test file, mirroring the contents of `data.json`.
 
