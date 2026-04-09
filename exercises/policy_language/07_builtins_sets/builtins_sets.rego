@@ -60,14 +60,10 @@ required_scopes := {"read", "write", "admin"}
 
 # TODO 1: write a complete rule — return the set difference
 #         (required_scopes minus input.scopes)
-# missing_scopes := ... {
-#     ...
-# }
+# missing_scopes := ...
 
 # TODO 2: write a complete rule — return the intersection of input.tags_a and input.tags_b
-# common_tags := ... {
-#     ...
-# }
+# common_tags := ...
 
 # TODO 3: write a partial set rule — collect names of users where
 #         role == "admin" AND active == true

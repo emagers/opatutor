@@ -60,19 +60,13 @@ import rego.v1
 # }
 
 # TODO 2: write a complete rule — join ["svc", input.name, input.env] with "-"
-# service_label := label if {
-#     ...
-# }
+# service_label := ...
 
 # TODO 3: write a complete rule — return input.name in lowercase
-# normalized_name := name if {
-#     ...
-# }
+# normalized_name := ...
 
 # TODO 4: write a complete rule — strip whitespace from input.hostname
-# clean_hostname := h if {
-#     ...
-# }
+# clean_hostname := ...
 
 # --- stubs (tests will fail until you complete the TODOs above) ---
 http_methods contains method if {

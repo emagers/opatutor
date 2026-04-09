@@ -52,24 +52,16 @@ package policy_language.builtins_arrays
 import rego.v1
 
 # TODO 1: write a complete rule — return the count of items in input.requests
-# request_count := n if {
-#     ...
-# }
+# request_count := ...
 
 # TODO 2: write a complete rule — return input.scores sorted ascending
-# sorted_scores := scores if {
-#     ...
-# }
+# sorted_scores := ...
 
 # TODO 3: write a complete rule — return only the first 3 elements of input.items
-# top_three := items if {
-#     ...
-# }
+# top_three := ...
 
 # TODO 4: write a complete rule — return the maximum value in input.durations
-# max_duration := m if {
-#     ...
-# }
+# max_duration := ...
 
 # --- stubs (tests will fail until you complete the TODOs above) ---
 request_count := 0 if { false }

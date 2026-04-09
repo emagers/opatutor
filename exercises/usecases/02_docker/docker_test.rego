@@ -4,6 +4,10 @@ import rego.v1
 
 import data.usecases.docker
 
+# Mock data (mirrors data.json — using `with` ensures tests work in all
+# contexts: CLI, VSCode test runner, etc.)
+mock_approved_registries := ["docker.io", "gcr.io", "ghcr.io", "registry.internal"]
+
 # A normal container from an approved registry should be allowed.
 test_approved_image_allowed if {
 	docker.allow with input as {
@@ -14,6 +18,7 @@ test_approved_image_allowed if {
 			"HostConfig": {"Privileged": false, "Binds": []},
 		},
 	}
+		with data.approved_registries as mock_approved_registries
 }
 
 # A container from an unknown registry should be denied.
@@ -26,6 +31,7 @@ test_unknown_registry_denied if {
 			"HostConfig": {"Privileged": false, "Binds": []},
 		},
 	}
+		with data.approved_registries as mock_approved_registries
 }
 
 # A privileged container must be denied even from an approved registry.
@@ -38,6 +44,7 @@ test_privileged_denied if {
 			"HostConfig": {"Privileged": true, "Binds": []},
 		},
 	}
+		with data.approved_registries as mock_approved_registries
 }
 
 # A container mounting the Docker socket must be denied.
@@ -53,6 +60,7 @@ test_socket_mount_denied if {
 			},
 		},
 	}
+		with data.approved_registries as mock_approved_registries
 }
 
 # Non-create requests (e.g. listing containers) should always be allowed.
@@ -74,4 +82,5 @@ test_ghcr_image_allowed if {
 			"HostConfig": {"Privileged": false, "Binds": []},
 		},
 	}
+		with data.approved_registries as mock_approved_registries
 }

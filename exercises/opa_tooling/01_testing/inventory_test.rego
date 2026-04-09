@@ -45,6 +45,16 @@ import rego.v1
 
 import data.opa_tooling.inventory
 
+# Mock data (mirrors data.json — using `with` ensures tests work in all
+# contexts: CLI, VSCode test runner, etc.)
+mock_vuln_db := {
+	"openssl": {"severity": "critical", "cve": "CVE-2024-0001"},
+	"log4j": {"severity": "high", "cve": "CVE-2021-44228"},
+	"libpng": {"severity": "medium", "cve": "CVE-2023-0002"},
+}
+
+mock_required_packages := ["curl", "bash", "jq"]
+
 # --- reference test (do NOT edit) ---
 
 test_clean_package_not_flagged if {
@@ -54,6 +64,7 @@ test_clean_package_not_flagged if {
 			{"name": "bash", "version": "5.2.0"},
 		],
 	}
+		with data.vuln_db as mock_vuln_db
 	not "curl" in result
 }
 
@@ -66,6 +77,7 @@ test_critical_package_is_flagged if {
 	result := inventory.vulnerable_packages with input as {
 		"installed": [{"name": "openssl", "version": "3.0.0"}],
 	}
+		with data.vuln_db as mock_vuln_db
 	not "openssl" in result
 }
 
@@ -80,6 +92,7 @@ test_all_required_present_when_fully_installed if {
 			{"name": "jq", "version": "1.6"},
 		],
 	}
+		with data.required_packages as mock_required_packages
 }
 
 # When a high-severity package ("log4j") is installed alongside all required
@@ -94,6 +107,8 @@ test_not_compliant_when_vulnerable_package_present if {
 			{"name": "log4j", "version": "2.14.0"},
 		],
 	}
+		with data.vuln_db as mock_vuln_db
+		with data.required_packages as mock_required_packages
 }
 
 # When only a subset of required packages is installed, all_required_present
@@ -102,6 +117,7 @@ test_not_compliant_when_vulnerable_package_present if {
 test_not_all_required_when_missing_package if {
 	false # TODO: replace with your assertion
 	# Hint: use `not inventory.all_required_present with input as { ... }`
+	#       with data.required_packages as mock_required_packages
 }
 
 # A fully clean system (all required present, no vulnerable packages)
@@ -111,5 +127,7 @@ test_compliant_when_clean if {
 	false # TODO: replace with your assertion
 	# Hint: provide installed packages that satisfy all_required_present
 	#       and none are in vuln_db. Check inventory.compliant is true.
+	#       Use: with data.vuln_db as mock_vuln_db
+	#            with data.required_packages as mock_required_packages
 }
 

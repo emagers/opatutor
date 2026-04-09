@@ -1,0 +1,17 @@
+rules:
+  bugs:
+    constant-condition:
+      level: ignore
+  style:
+    todo-comment:
+      level: ignore
+    prefer-some-in-iteration:
+      level: ignore
+    default-over-else:
+      level: ignore
+  idiomatic:
+    no-defined-entrypoint:
+      level: ignore
+  testing:
+    todo-test:
+      level: ignore
