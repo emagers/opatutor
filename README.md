@@ -1,6 +1,6 @@
 # opatutor
 
-An interactive, hands-on learning tool for [OPA](https://www.openpolicyagent.org/) and the Rego policy language — inspired by [rustlings](https://github.com/rust-lang/rustlings).
+An interactive, hands-on learning tool for [OPA](https://www.openpolicyagent.org/) and the Rego policy language.
 
 Each exercise is a small, intentionally broken policy file. Read the comments, fix the code, run the tests, and move on.
 
