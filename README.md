@@ -58,7 +58,7 @@ Verify:
 opa version
 ```
 
-### 2 — Install Go 1.21+
+### 2 — Install Go 1.26+
 
 Download from [go.dev/dl](https://go.dev/dl/) or use your system package manager.
 
