@@ -1,0 +1,8 @@
+{
+    "required_packages": ["curl", "bash", "jq"],
+    "vuln_db": {
+        "openssl": {"severity": "critical", "cve": "CVE-2024-0001"},
+        "log4j":   {"severity": "high",     "cve": "CVE-2021-44228"},
+        "libpng":  {"severity": "medium",   "cve": "CVE-2023-0002"}
+    }
+}

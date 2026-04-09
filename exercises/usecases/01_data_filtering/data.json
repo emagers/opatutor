@@ -1,0 +1,9 @@
+{
+    "documents": [
+        {"id": "doc-1", "owner": "alice", "classification": "private"},
+        {"id": "doc-2", "owner": "alice", "classification": "public"},
+        {"id": "doc-3", "owner": "bob",   "classification": "private"},
+        {"id": "doc-4", "owner": "bob",   "classification": "public"},
+        {"id": "doc-5", "owner": "carol", "classification": "private"}
+    ]
+}
