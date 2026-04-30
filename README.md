@@ -37,7 +37,7 @@ chmod +x /usr/local/bin/opa
 **Windows (PowerShell)**
 ```powershell
 # Download the OPA binary
-Invoke-WebRequest -Uri "https://github.com/open-policy-agent/opa/releases/download/v0.68.0/opa_windows_amd64.exe" `
+Invoke-WebRequest -Uri "https://github.com/open-policy-agent/opa/releases/download/v1.16.0/opa_windows_amd64.exe" `
   -OutFile "$env:USERPROFILE\opa.exe"
 
 # Move it somewhere on your PATH, e.g. C:\Program Files\opa\
@@ -46,11 +46,6 @@ Move-Item "$env:USERPROFILE\opa.exe" "C:\Program Files\opa\opa.exe"
 
 # Add to PATH for the current session (or set it permanently in System Settings)
 $env:PATH += ";C:\Program Files\opa"
-```
-
-**Windows (winget)**
-```powershell
-winget install OpenPolicyAgent.OPA
 ```
 
 Verify:
