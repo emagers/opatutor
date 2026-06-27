@@ -1,6 +1,6 @@
 {
     "recommendations": [
-        "open-policy-agent.opa",
+        "tsandall.opa",
         "golang.go"
     ]
 }

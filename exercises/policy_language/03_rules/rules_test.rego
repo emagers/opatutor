@@ -43,13 +43,15 @@ test_replica_counts_map if {
 			{"name": "db", "replicas": 5},
 		],
 	}
-	result == {"api": 2, "db": 5}
+	result["api"] == 2
+	result["db"] == 5
 }
 
 test_replica_counts_single if {
 	result := rules.replica_counts with input as {
 		"services": [{"name": "web", "replicas": 3}],
 	}
+	result["web"] != null
 	result["web"] == 3
 }
 

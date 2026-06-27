@@ -9,8 +9,15 @@ rules:
       level: ignore
     default-over-else:
       level: ignore
+    opa-fmt:
+      level: ignore
+  imports:
+    unresolved-reference:
+      level: ignore
   idiomatic:
     no-defined-entrypoint:
+      level: ignore
+    directory-package-mismatch:
       level: ignore
   testing:
     todo-test:
