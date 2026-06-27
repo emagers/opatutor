@@ -47,11 +47,6 @@ Move-Item "$env:USERPROFILE\opa.exe" "C:\Program Files\opa\opa.exe"
 $env:PATH += ";C:\Program Files\opa"
 ```
 
-**Windows (winget)**
-```powershell
-winget install OpenPolicyAgent.OPA
-```
-
 Verify:
 ```bash
 opa version
