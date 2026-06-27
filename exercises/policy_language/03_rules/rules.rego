@@ -66,13 +66,6 @@ import rego.v1
 # --- stubs (tests will fail until you complete the TODOs above) ---
 max_retries := 0 if { false }
 
-approved_regions contains r if {
-	r := input.regions[_]
-	false
-}
+approved_regions := {"failed"}
 
-replica_counts[key] := val if {
-	key := input.services[_].name
-	val := 0
-	false
-}
+replica_counts := {"api":0, "db":0, "web": 0}

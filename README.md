@@ -1,8 +1,7 @@
 # opatutor
 
-An interactive, hands-on learning tool for [OPA](https://www.openpolicyagent.org/) and the Rego policy language — inspired by [rustlings](https://github.com/rust-lang/rustlings).
+An interactive, hands-on learning tool for [OPA](https://www.openpolicyagent.org/) and the Rego policy language.
 
-Each exercise is a small, intentionally broken policy file. Read the comments, fix the code, run the tests, and move on.
 
 ---
 
@@ -30,14 +29,14 @@ brew install opa
 **Linux / WSL**
 ```bash
 curl -L -o /usr/local/bin/opa \
-  https://github.com/open-policy-agent/opa/releases/download/v0.68.0/opa_linux_amd64_static
+  https://github.com/open-policy-agent/opa/releases/download/v1.18.0/opa_linux_amd64_static
 chmod +x /usr/local/bin/opa
 ```
 
 **Windows (PowerShell)**
 ```powershell
 # Download the OPA binary
-Invoke-WebRequest -Uri "https://github.com/open-policy-agent/opa/releases/download/v0.68.0/opa_windows_amd64.exe" `
+Invoke-WebRequest -Uri "https://github.com/open-policy-agent/opa/releases/download/v1.18.0/opa_windows_amd64.exe" `
   -OutFile "$env:USERPROFILE\opa.exe"
 
 # Move it somewhere on your PATH, e.g. C:\Program Files\opa\
@@ -58,7 +57,7 @@ Verify:
 opa version
 ```
 
-### 2 — Install Go 1.21+
+### 2 — Install Go 1.26+
 
 Download from [go.dev/dl](https://go.dev/dl/) or use your system package manager.
 
